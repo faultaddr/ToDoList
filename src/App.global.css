@@ -1,0 +1,21 @@
+@import "~antd/dist/antd.css";
+.ant-tabs-tab-btn {
+  color: white !important;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #1890ff !important;
+}
+.ant-list-item-meta-title{
+  color: white !important;
+}
+.ant-list-item-meta-description{
+  color: white !important;
+}
+
+.ant-timeline-item-content{
+  color: white !important;
+}
+.ant-timeline-item-label{
+  color: white !important;
+}
