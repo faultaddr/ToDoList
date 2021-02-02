@@ -5,12 +5,43 @@ import { Timeline, Input, Button, Modal, TimePicker, Steps } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 
 const { Step } = Steps;
+/**
+ * 首先导出Props声明, 同样是{ComponentName}Props形式命名
+ */
+export interface TimeSeriesProps {
+  defaultCount?: number; // 可选props, 不需要?修饰
+}
 
-export class TimeSeries extends React.Component {
-  timeRef: never;
+/**
+ * 组件状态, 不需要暴露
+ */
+interface State {
+  open: boolean;
+  list: ListType[];
+  modalVisible: boolean;
+  setTime: string;
+  setContent: string;
+}
 
-  constructor(props: never) {
+interface ListType {
+  time: string;
+  content: string;
+  color: string;
+  status: number;
+}
+export default class TimeSeries extends React.Component<
+  TimeSeriesProps,
+  State
+> {
+  constructor(props: TimeSeriesProps) {
     super(props);
+    this.state = {
+      open: false,
+      list: [],
+      modalVisible: false,
+      setTime: '',
+      setContent: '',
+    };
   }
 
   handleTimeChange = (_time: never, timeString: never) => {
@@ -19,28 +50,27 @@ export class TimeSeries extends React.Component {
     });
   };
 
-  handleOpenChange = (open: never) => {
+  handleOpenChange = (open: boolean) => {
     this.setState({ open });
   };
 
   handleClose = () => this.setState({ open: false });
 
   handleModalClose = (flag: boolean) => {
-    if (flag == true) {
-      if (this.state.setContent != null && this.state.setTime != null) {
+    const tempState = this.state;
+    if (flag === true) {
+      if (tempState.setContent !== null && tempState.setTime !== null) {
+        const newStatus: ListType = {
+          time: tempState.setTime,
+          content: tempState.setContent,
+          color: '',
+          status: 0,
+        };
         this.setState({
           modalVisible: false,
-          list: [
-            ...this.state.list,
-            {
-              time: this.state.setTime,
-              content: this.state.setContent,
-              color: null,
-              status: 0,
-            },
-          ],
-          setTime: null,
-          setContent: null,
+          list: [...tempState.list, newStatus],
+          setTime: '',
+          setContent: '',
         });
       } else {
         this.setState({ modalVisible: false });
@@ -50,19 +80,13 @@ export class TimeSeries extends React.Component {
     }
   };
 
-  handleInputChange = (e: never) =>
-    this.setState({ setContent: e.target.value });
+  handleInputChange = (e: any) => this.setState({ setContent: e.target.value });
 
   handleStatusChange = (index: number) => {
-    console.log(index);
-    const newStatus: {
-      time: string;
-      content: string;
-      color: string;
-      status: number;
-    } = this.state.list[index];
-    const before = this.state.list.slice(0, index);
-    const after = this.state.list.slice(index + 1);
+    const tempState = this.state;
+    const newStatus: ListType = tempState.list[index];
+    const before = tempState.list.slice(0, index);
+    const after = tempState.list.slice(index + 1);
     newStatus.color = 'green';
     newStatus.status = 1;
     this.setState({
@@ -71,68 +95,31 @@ export class TimeSeries extends React.Component {
   };
 
   handleStatusDelete = (index: number) => {
-    const before = this.state.list.slice(0, index);
-    const after = this.state.list.slice(index + 1);
+    const tempState = this.state;
+    const before = tempState.list.slice(0, index);
+    const after = tempState.list.slice(index + 1);
     this.setState({
       list: [...before, ...after],
     });
   };
 
-  state = {
-    open: false,
-    initLoading: true,
-    loading: false,
-    data: [],
-    list: [],
-    inputState: [false, false, false, false],
-    modalVisible: false,
-    setTime: null,
-    setContent: null,
-  };
-
-  addEvent = (_e: never) => {
+  addEvent = () => {
     // 根据index 去修改对应的数据
     this.setState({
       modalVisible: true,
     });
   };
 
-  setRef = (element: unknown) => {
-    this.timeRef = element;
-  };
-
   render() {
     let { list } = this.state;
-    list = list.sort(function (
-      a: {
-        time: string;
-        content: string;
-        color: string;
-        status: number;
-      },
-      b: {
-        time: string;
-        content: string;
-        color: string;
-        status: number;
-      }
-    ): never {
-      console.log(Date.parse(b.time) - Date.parse(a.time));
+    const tempState = this.state;
+    list = list.sort((a: ListType, b: ListType): number => {
       return Date.parse(b.time) - Date.parse(a.time);
     });
-    let elementList: never = [];
+    const elementList: unknown[] = [];
     list.map(
-      (
-        e: {
-          time: string;
-          content: string;
-          color: string;
-          status: number;
-        },
-        index
-      ) => {
-        elementList = [
-          ...elementList,
+      (e: ListType, index: number): ListType => {
+        elementList.push(
           <Timeline.Item label={e.time} color={e.color}>
             <div
               style={{
@@ -158,7 +145,7 @@ export class TimeSeries extends React.Component {
                     marginTop: '10px',
                     fontSize: '18px',
                   }}
-                  onClick={(_e) => this.handleStatusChange(index)}
+                  onClick={() => this.handleStatusChange(index)}
                 />
                 <CloseCircleTwoTone
                   style={{
@@ -167,26 +154,26 @@ export class TimeSeries extends React.Component {
                     fontSize: '18px',
                     marginLeft: '10px',
                   }}
-                  onClick={(_e) => this.handleStatusDelete(index)}
+                  onClick={() => this.handleStatusDelete(index)}
                 />
               </div>
             </div>
-          </Timeline.Item>,
-        ];
+          </Timeline.Item>
+        );
+        return list[index];
       }
     );
-
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Modal
-          visible={this.state.modalVisible}
-          onOk={(_e) => this.handleModalClose(true)}
-          onCancel={(_e) => this.handleModalClose(false)}
+          visible={tempState.modalVisible}
+          onOk={() => this.handleModalClose(true)}
+          onCancel={() => this.handleModalClose(false)}
         >
           <div>
             <TimePicker
-              open={this.state.open}
-              onChange={this.handleTimeChange}
+              open={tempState.open}
+              onChange={() => this.handleTimeChange}
               onOpenChange={this.handleOpenChange}
               defaultValue={undefined}
               renderExtraFooter={() => (
@@ -204,7 +191,7 @@ export class TimeSeries extends React.Component {
         </Modal>
         <Button
           style={{ alignSelf: 'center', marginBottom: '3%' }}
-          onClick={(e) => this.addEvent(e)}
+          onClick={() => this.addEvent()}
         >
           添加事务
         </Button>

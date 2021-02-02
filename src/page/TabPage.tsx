@@ -1,24 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { ReactComponentElement } from 'react';
 import 'antd/dist/antd.css';
 import './index.css';
 import { Tabs } from 'antd';
 import { DndProvider, DragSource, DropTarget } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-const { TabPane } = Tabs;
-
-// Drag & Drop node
-class TabNode extends React.Component {
-  render() {
-    const { connectDragSource, connectDropTarget, children } = this.props;
-
-    return connectDragSource(connectDropTarget(children));
-  }
+function TabNode({ connectDragSource, connectDropTarget, children }: any) {
+  return connectDragSource(connectDropTarget(children));
 }
-
 const cardTarget = {
-  drop(props, monitor) {
+  drop(props: any, monitor: any) {
     const dragKey = monitor.getItem().index;
     const hoverKey = props.index;
 
@@ -32,7 +24,7 @@ const cardTarget = {
 };
 
 const cardSource = {
-  beginDrag(props) {
+  beginDrag(props: any) {
     return {
       id: props.id,
       index: props.index,
@@ -49,16 +41,27 @@ const WrapTabNode = DropTarget('DND_NODE', cardTarget, (connect) => ({
   }))(TabNode)
 );
 
-export default class DraggableTabs extends React.Component {
-  state = {
-    order: [],
-  };
+// Drag & Drop node
+export interface IProps {
+  children: unknown[]; // 可选props, 不需要?修饰
+}
+interface State {
+  order: number[];
+}
+export default class DraggableTabs extends React.Component<IProps, State> {
+  constructor(props: IProps) {
+    super(props);
+    this.state = {
+      order: [],
+    };
+  }
 
-  moveTabNode = (dragKey, hoverKey) => {
-    const newOrder = this.state.order.slice();
+  moveTabNode = (dragKey: number, hoverKey: number) => {
+    const tempState = this.state;
+    const newOrder: number[] = tempState.order.slice();
     const { children } = this.props;
 
-    React.Children.forEach(children, (c) => {
+    React.Children.forEach(children, (c: any) => {
       if (newOrder.indexOf(c.key) === -1) {
         newOrder.push(c.key);
       }
@@ -75,9 +78,9 @@ export default class DraggableTabs extends React.Component {
     });
   };
 
-  renderTabBar = (props, DefaultTabBar) => (
+  renderTabBar = (props: any, DefaultTabBar: any) => (
     <DefaultTabBar {...props}>
-      {(node) => (
+      {(node: any) => (
         <WrapTabNode
           key={node.key}
           index={node.key}
@@ -93,7 +96,7 @@ export default class DraggableTabs extends React.Component {
     const { order } = this.state;
     const { children } = this.props;
 
-    const tabs = [];
+    const tabs: any[] = [];
     React.Children.forEach(children, (c) => {
       tabs.push(c);
     });
@@ -117,7 +120,6 @@ export default class DraggableTabs extends React.Component {
 
       return ia - ib;
     });
-
     return (
       <DndProvider backend={HTML5Backend}>
         <Tabs renderTabBar={this.renderTabBar} {...this.props}>

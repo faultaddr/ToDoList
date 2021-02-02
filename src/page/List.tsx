@@ -3,17 +3,28 @@ import 'antd/dist/antd.css';
 import './index.css';
 import { List, Button, Skeleton } from 'antd';
 
-export default class LoadMoreList extends React.Component {
-  state = {
-    initLoading: true,
-    loading: false,
-    data: [],
-    list: [],
-  };
+interface State {
+  initLoading: boolean;
+  loading: boolean;
+  data: [];
+  list: [];
+}
+export interface IProps {
+  defaultCount?: number; // 可选props, 不需要?修饰
+}
+export default class LoadMoreList extends React.Component<IProps, State> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      initLoading: true,
+      loading: false,
+      data: [],
+      list: [],
+    };
+  }
 
   componentDidMount() {
     this.getData((res: { results: any }) => {
-      console.log(res);
       this.setState({
         initLoading: false,
         data: res.results,
@@ -33,7 +44,8 @@ export default class LoadMoreList extends React.Component {
       loading: true,
     });
     this.getData((res) => {
-      const data = this.state.data.concat(res.results);
+      const tempState: any = this.state;
+      const data = tempState.data.concat(res.results);
       this.setState(
         {
           data,
@@ -52,7 +64,6 @@ export default class LoadMoreList extends React.Component {
 
   render() {
     const { initLoading, loading, list } = this.state;
-    console.log(list, initLoading, loading);
     const loadMore =
       !initLoading && !loading ? (
         <div
@@ -74,15 +85,10 @@ export default class LoadMoreList extends React.Component {
         loadMore={loadMore}
         dataSource={list}
         renderItem={(item) => (
-          <List.Item
-            actions={[
-              <a key="list-loadmore-edit">完成</a>,
-              <a key="list-loadmore-more">删除</a>,
-            ]}
-          >
+          <List.Item>
             <Skeleton avatar title loading={false} active>
               <List.Item.Meta
-                title={item}
+                title="123"
                 description="Ant Design, a design language for background applications, is refined by Ant UED Team"
               />
               <div>content</div>
