@@ -44,7 +44,8 @@ export default class TimeSeries extends React.Component<
     };
   }
 
-  handleTimeChange = (_time: never, timeString: never) => {
+  handleTimeChange = (_time: any, timeString: string) => {
+    console.log('>>>>>', timeString);
     this.setState({
       setTime: timeString,
     });
@@ -58,8 +59,9 @@ export default class TimeSeries extends React.Component<
 
   handleModalClose = (flag: boolean) => {
     const tempState = this.state;
+    console.log(tempState);
     if (flag === true) {
-      if (tempState.setContent !== null && tempState.setTime !== null) {
+      if (tempState.setContent !== '' && tempState.setTime !== '') {
         const newStatus: ListType = {
           time: tempState.setTime,
           content: tempState.setContent,
@@ -110,11 +112,22 @@ export default class TimeSeries extends React.Component<
     });
   };
 
+  getSecond = (s: string) => {
+    const as: string[] = s.split(':');
+    const hour: number = Number.parseInt(as[0], 10);
+    const minute: number = Number.parseInt(as[1], 10);
+    const second: number = Number.parseInt(as[2], 10);
+    return second + minute * 60 + hour * 3600;
+  };
+
   render() {
     let { list } = this.state;
     const tempState = this.state;
+
     list = list.sort((a: ListType, b: ListType): number => {
-      return Date.parse(b.time) - Date.parse(a.time);
+      const sa = this.getSecond(a.time);
+      const sb = this.getSecond(b.time);
+      return sa - sb;
     });
     const elementList: unknown[] = [];
     list.map(
@@ -131,12 +144,12 @@ export default class TimeSeries extends React.Component<
               <span style={{ alignSelf: 'flex-start', fontSize: 16 }}>
                 {e.content}
               </span>
-              <div style={{ width: '60%' }}>
+              {/* <div style={{ width: '60%' }}>
                 <Steps current={e.status} percent={60}>
                   <Step />
                   <Step />
                 </Steps>
-              </div>
+              </div> */}
               <div>
                 <CheckCircleTwoTone
                   twoToneColor="#52c41a"
@@ -166,14 +179,15 @@ export default class TimeSeries extends React.Component<
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Modal
+          style={{ backgroundColor: 'transparent !important' }}
           visible={tempState.modalVisible}
-          onOk={() => this.handleModalClose(true)}
-          onCancel={() => this.handleModalClose(false)}
+          onOk={(e) => this.handleModalClose(true)}
+          onCancel={(e) => this.handleModalClose(false)}
         >
-          <div>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
             <TimePicker
               open={tempState.open}
-              onChange={() => this.handleTimeChange}
+              onChange={this.handleTimeChange}
               onOpenChange={this.handleOpenChange}
               defaultValue={undefined}
               renderExtraFooter={() => (
@@ -190,12 +204,16 @@ export default class TimeSeries extends React.Component<
           </div>
         </Modal>
         <Button
-          style={{ alignSelf: 'center', marginBottom: '3%' }}
+          style={{
+            alignSelf: 'flex-end',
+            marginBottom: '3%',
+            marginRight: '3%',
+          }}
           onClick={() => this.addEvent()}
         >
           添加事务
         </Button>
-        <Timeline mode="left" pending>
+        <Timeline mode="left" pending style={{ marginLeft: '-50%' }}>
           {elementList}
         </Timeline>
       </div>

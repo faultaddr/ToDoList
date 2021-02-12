@@ -1,4 +1,4 @@
-@import "~antd/dist/antd.css";
+@import '~antd/dist/antd.css';
 .ant-tabs-tab-btn {
   color: white !important;
 }
@@ -6,16 +6,24 @@
 .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
   color: #1890ff !important;
 }
-.ant-list-item-meta-title{
+.ant-list-item-meta-title {
   color: white !important;
 }
-.ant-list-item-meta-description{
+.ant-list-item-meta-description {
   color: white !important;
 }
 
-.ant-timeline-item-content{
+.ant-timeline-item-content {
   color: white !important;
 }
-.ant-timeline-item-label{
+.ant-timeline-item-label {
   color: white !important;
+}
+
+.ant-tabs-nav {
+  -webkit-app-region: drag;
+}
+
+.ant-tabs-nav-list {
+  -webkit-app-region: no-drag !important;
 }

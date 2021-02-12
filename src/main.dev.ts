@@ -68,14 +68,14 @@ const createWindow = async () => {
   };
 
   mainWindow = new BrowserWindow({
-    frame: false,   //要创建无边框窗口
-    resizable: false, //禁止窗口大小缩放
+    frame: false, // 要创建无边框窗口
+    resizable: false, // 禁止窗口大小缩放
     webPreferences: {
-      devTools: true, //关闭调试工具
+      devTools: true, // 关闭调试工具
       nodeIntegration: true,
     },
-    transparent: true,  //设置透明
-    alwaysOnTop: true,  //窗口是否总是显示在其他窗口之前
+    transparent: true, // 设置透明
+    alwaysOnTop: false, // 窗口是否总是显示在其他窗口之前
     movable: true,
     width: 600,
     height: 600,
